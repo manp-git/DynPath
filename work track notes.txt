@@ -1,0 +1,34 @@
+TO-DO for 16-Aug-2021
+
+
+write a verilog code saying that if this path value is thr at this trigger- count =count+1
+
+for verification purpose
+
+can do one by one - cam not required
+
+17-8-2021
+
+done
+
+1) finalise that the commmon tpr is being written correctly once. for ALL paths
+
+2) Then proceed for hardware
+
+3) Will do path speciifc process count after that- verification/count first
+
+
+
+23-aug-2021
+1) hardware synthesize only path prof - basys -3  --  do with previous f_l_prof for difference 
+2) hardware synthesize only path prof - kintex -7
+
+3) ila etc circuit for kintex-7 implementation
+
+4) logic for proc spec path inv count
+
+6-9-2021
+trying to get hw running- error in viv 19 during custom ip- -axi ports-tried baysys 3- same errors
+old project wont run here due to old my_ip so cant validate- but viv 19 has diff custom p directory structure as well
+
+tired installing vivado 17- no shortcut for launching
