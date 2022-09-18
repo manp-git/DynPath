@@ -13,6 +13,9 @@ and the Path Content Addressable Memory (Path CAM) with a unidirectional flow of
 75
 information. There is a separate Finite State Machine (FSM) acting as the control unit
 to synchronize these 3 modules.
+
+![image](https://user-images.githubusercontent.com/82860513/190897180-eddb8c3b-21d9-4aae-9d0f-51ccfdae5442.png)
+
 Input from the
 instruction
 decoder, control
