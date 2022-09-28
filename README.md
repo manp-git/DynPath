@@ -1,7 +1,8 @@
 # DynPath
- Non-intrusive hardware based Execution Path Profiling
+ Non-intrusive Hardware-based Execution Path Profiling
+
  
- ![image](https://user-images.githubusercontent.com/82860513/190897180-eddb8c3b-21d9-4aae-9d0f-51ccfdae5442.png)
- 
- 
-hello
+
+This repository shares the Design flow and architectural details for DynPath along with the Tool Flow and methodology for test case generation and working with FPGA.
+The initial implementation of the instruction decoder and control unit in similar to DynRP. 
+Code logic specific to Path Detection and Identification along with PSPIC is uploaded in this repository. This logic can be interfaced with one's function and loop profiler to generate execution path profiling information in hardware.
