@@ -8,11 +8,11 @@ int i=0;
 
 int F3 ()
 {
-printf("\n F3 \n");
-for(int x=0; x<3;x++)
-{
-  a=a+1;
-printf("\n L2 \n");}
+	printf("\n F3 \n");
+	for(int x=0; x<3;x++)
+	{
+	 a=a+1;
+	printf("\n L2 \n");}
 return 0;
 }
 
