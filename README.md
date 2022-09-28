@@ -1,5 +1,4 @@
-# DynPath
- Non-intrusive Hardware-based Execution Path Profiling
+# DynPath - A Non-intrusive Hardware-based Execution Path Profiler
 
  
 
