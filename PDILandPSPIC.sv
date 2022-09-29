@@ -4,27 +4,19 @@
 module PDIL_PSPIC(
 input clk,
 input reset,
-//input st4,
 input st7,
 input st8,
 input l,
 input f,
-//input call,
-//input loop_exit,// substuted with its expression by below two
 input loop_det,
 input P_Trace_Jump_Taken,
 input ret,
 input [4:0] match_addr,
-//input code_end,
-//input [4:0] f2, // delayed from f1
-//input reg [4:0] f,
 output reg [4:0] f2,f1,//depth of path =20, so 5 bit 
 output [5:0] data_out,
 output reg [19:0] flag_reg,//depth of path =20
 
 output [4:0] next_free_location,//depth of path =20, so 5 bit 
-//output reg path_return_mode, path_entry_mode,
-//output reg [5:0] temp_size
 
 output [31:0] pcam_out0,
 output [31:0] pcam_out1,
@@ -124,7 +116,6 @@ output [255:0] PSPIC28,
 output [255:0] PSPIC29,
 output [255:0] PSPIC30,
 output [255:0] PSPIC31
-//output [255:0] PSPIC32
 
     );
 	 
@@ -138,9 +129,7 @@ wire temp_length;
  /*(* keep = "true" *) */reg [7:0] ps_invc [31:0]; //max. no. of process profiler supports
  /*(* keep = "true" *)*/ reg [7:0] ps_invc_temp [31:0]; //max. no. of process profiler supports
 
- //(* keep = "true" *)
-  //reg [255:0] PSPIC [31:0];
- (* ram_style = "distributed" *) reg [255:0] PSPIC [31:0];
+reg [255:0] PSPIC [31:0];
 reg [4:0] temp_size;//temp size for CAM folding condition
 reg [4:0] next_free_loc;//depth of path =20, so 5 bit 
 reg [4:0] branching_pointer_old, branching_pointer_new;//depth of path =20, so 5 bit 
@@ -161,7 +150,6 @@ begin
         end
     else
     begin
-  // st6_d1<=st6;
         st7_d1 <=  st7;
 
 end
@@ -170,13 +158,11 @@ always@(posedge clk)
 begin
     if(reset)
     begin
-  //  st6_d2<=1'b0;
         st7_d2 <= 1'b0;
 
         end
     else
     begin
-   // st6_d2<=st6_d1;
         st7_d2 <=  st7_d1;
 
 end
@@ -192,8 +178,6 @@ begin
 if(reset) begin
 
   next_free_loc <= 5'b0;
-  //temp_to_cam<=1'b0;
-//  path_temp_sel<= 1'b0;
   temp_switch = 1'b1;
   temp_size<=5'b0;
   f2<=5'b00000; 
@@ -283,14 +267,7 @@ if(reset) begin
   ps_invc[21] <= 8'b0;
   ps_invc[22] <= 8'b0;
   ps_invc[23] <= 8'b0;
- /* ps_invc[24] <= 8'b0;
-  ps_invc[25] <= 8'b0;
-  ps_invc[26] <= 8'b0;
-  ps_invc[27] <= 8'b0;
-  ps_invc[28] <= 8'b0;
-  ps_invc[29] <= 8'b0;
-  ps_invc[30] <=8'b0;
-  ps_invc[31] <= 8'b0;*/
+
  
  
   ps_invc_temp[0] <= 8'b0;
@@ -317,14 +294,7 @@ if(reset) begin
   ps_invc_temp[21] <= 8'b0;
   ps_invc_temp[22] <= 8'b0;
   ps_invc_temp[23] <= 8'b0;
-/*  ps_invc_temp[24] <= 8'b0;
-  ps_invc_temp[25] <= 8'b0;
-  ps_invc_temp[26] <= 8'b0;
-  ps_invc_temp[27] <= 8'b0;
-  ps_invc_temp[28] <= 8'b0;
-  ps_invc_temp[29] <= 8'b0;
-  ps_invc_temp[30] <=8'b0;
-  ps_invc_temp[31] <= 8'b0;*/
+
  
    
 
@@ -338,19 +308,12 @@ else if((st7 &l)|| (st7_d2 &f))  // from st7_d1 &l in questa
  //CASE-1  
 	 if((f2==5'b00000) && (f1==5'b00000)) 
          begin 
-	       //  f1<=next_free_loc;//f2
-	         f1<=f2;//7-1-2021
-	       //  flag_addr[next_free_loc]<= match_addr; //f2
-	         flag_addr[f2]<= match_addr; //7-1-2021
-	      //   f2<=next_free_loc+1;//f2+6'b000001; 
+	         f1<=f2;
+	         flag_addr[f2]<= match_addr; 
 	         ps_invc[f2] <= ps_invc[f2]+1'b1;
-	         f2<=f2+5'b00001;//7-1-2021; 
-	     //    flag_reg[next_free_loc]<=1'b1; //17-12-2020 for hit2 //flag_reg[f1]<=1'b1;...........TEST HIT 1 AGAIN AND ANALYSE
-	         flag_reg[f1]<=1'b1;//7-1-2021;
-	         //  path_return_mode<=1'b0;      // reset path pointer has started
-             //	path_entry_mode <= 1'b1;
-		   //  next_free_loc<= next_free_loc+1; //26-11-2020  
-		     next_free_loc<= 1'b1; //7-1-2021
+	         f2<=f2+5'b00001;
+	         flag_reg[f1]<=1'b1;
+		 next_free_loc<= 1'b1; //7-1-2021
 	     end
 	     
 //CASE-2    //Detect change required in Current position and for the forward direction
@@ -360,8 +323,7 @@ else if((st7 &l)|| (st7_d2 &f))  // from st7_d1 &l in questa
 	             begin
 	                f1<=f2;
 	                flag_addr[next_free_loc]<=match_addr;
-	                ps_invc[next_free_loc] <= ps_invc[next_free_loc]+1'b1;
-	                
+	                ps_invc[next_free_loc] <= ps_invc[next_free_loc]+1'b1;	              
  	                f2<=f2+5'b00001;
 	                flag_reg[f1+1]<=1'b1;
 	                next_free_loc<= next_free_loc+1;
@@ -378,7 +340,7 @@ else if((st7 &l)|| (st7_d2 &f))  // from st7_d1 &l in questa
 	                       flag_reg[f1+1]<=1'b1;//26-11-2020
 	                       next_free_loc<= next_free_loc;
 	                    end
-	  //culprit - 1st ques why f2<next_loc             
+           
 	                else if (flag_addr[f2]!=match_addr)//) || (f2==6'b0 && (ret )))// -> different means tempswitch //branchchange
 	                //copy parent path
 	                    begin
@@ -396,21 +358,14 @@ else if((st7 &l)|| (st7_d2 &f))  // from st7_d1 &l in questa
 	                         ps_invc[k]<=0; end
 	                        end                 
 	                                       
-	                    /*copy data to temp path
-	                    put a generate loop - for index>f2=0
-	                    f2=nw
-	                    rest as it is*/
+
 	                       f1<=f2;//26-11-2020
 	                       f2<=f2+5'b00001;
 	                       flag_reg[f1+1]<=1'b1;//26-11-2020
 	                       temp_switch<=~temp_switch;//yet to decide
 	                       temp_size<=next_free_loc;//yet to decide
 	                       next_free_loc<=f2+1;
-	                       
-	                   //    length_path<=(3<=next_free_loc<=5)?2'b01:(1<=next_free_loc<=2)?2'b10:2'b00;
-	                       
-	                    //   f1<=0;
-	                  //     f2<=0;
+
 	                    end 
 	              end
 	          else;
@@ -420,11 +375,9 @@ else if((st7 &l)|| (st7_d2 &f))  // from st7_d1 &l in questa
 
 	 
 else if (st8 & (ret | (loop_det & !P_Trace_Jump_Taken)))//both logical and arith and-or are fine
-//(st8 && (ret || loop_exit)) with loop_exit- simulator was getting loop_exit-1 not at correct instance, though it was 1 in that clock cycle..
-//i.e. loop_det was 1 but loop exit was 0 at initial instance// it was all issue wrt simulator sequencing, with description inside flag_arrd of loop exit - it works fine
-	   begin 
+   begin 
 	      if(f2==5'b00001) begin // chks old value of f //Takes care of last ret/exit form user code
-	      //done to take care of 1-2 = 1f issue in f1 variable
+
 	         f1<= f2-5'b00001; 
 	// COPY ENTIRE PATH WHEN EXIT TO MAIN        
 
@@ -437,7 +390,6 @@ else if (st8 & (ret | (loop_det & !P_Trace_Jump_Taken)))//both logical and arith
 	         temp_size<=next_free_loc;//yet to decide
 	         next_free_loc<=0;
 	         
-	       //  length_path<=(3<=next_free_loc<=5)?2'b01:(1<=next_free_loc<=2)?2'b10:2'b00;
 	      end
 	         
 	      else begin
@@ -480,35 +432,12 @@ path_temp0<=(reset)?120'b0:(temp_switch_pulse & temp_switch)?path_temp_combined:
 path_temp1<=(reset)?120'b0:(temp_switch_pulse & (!temp_switch))?path_temp_combined:path_temp1;
 end
 
-/***********common_TPR / counter for verification purpose only****************/
-reg [119:0] common_TPR;
-//reg [89:0] common_TPR;
-//reg [29:0] test_count0, test_count1, test_count2, test_count3, test_count4, test_count5, test_count6, test_count7, test_count8, test_count9, test_count10;
-
-always@(posedge clk)
-begin
-if (reset)
-begin
-common_TPR<= 120'b0;
-
-end
-
-else if(temp_switch_pulse)
-begin
-// hardware pupose - common_TPR<= temp_switch ? path_temp0:path_temp1;//(temp_switch & path_temp0);// | ((~temp_switch) && path_temp1);
-
-/***********counter for verification purpose only****************/
-common_TPR= temp_switch ? path_temp0:path_temp1;//(temp_switch & path_temp0);// | ((~temp_switch) && path_temp1);
-
-/****************************/
-end
-end
 /****************************/
 
 assign data_out = flag_addr[f1];
 assign next_free_location = next_free_loc;
 
-//assign length_path=((temp_size>=16)&&(temp_size<=20))?2'b11:((temp_size>=11)&&(temp_size<=15))?2'b10:((temp_size>=6)&&(temp_size<=10))?2'b01:2'b00;
+
 assign length_path=((temp_size>=19)&&(temp_size<=24))?2'b11:((temp_size>=13)&&(temp_size<=18))?2'b10:((temp_size>=7)&&(temp_size<=12))?2'b01:2'b00;
 /////////////////////////////////////
 
@@ -546,20 +475,20 @@ begin
 if (reset)
 begin
 path_temp_d1[m]<=0;
-//path_temp_d2[m]<=0;
+
 end
 else begin
 path_temp_d1[m]<=path_temp[m];
-//path_temp_d2[m]<=path_temp_d1[m];
+
 end
 end
 end
 
- //cam0 filling pending
+
  always@(*)
- //always@(posedge clk) - synth error
+
  begin
-    //next_state=S_INIT;
+
     case(cam_state)
     
         S0://reset and state
@@ -644,12 +573,9 @@ end
                 begin  path_addr=read_addr;
                 hit_wren = 1'b1;
                 next_state=S1; 
-	               
-   		 
-          
+
                 end
- 
-                
+       
                 else
                     begin
                         next_state= (p<path_count)?S2:S5; //when not match proceed further
@@ -765,32 +691,7 @@ begin
                     PSPIC[path_temp_d1[23]][7:0]<=(23==branching_pointer_old)?(PSPIC[path_temp_d1[23]][7:0]+ps_invc_temp[23]):PSPIC[path_temp_d1[23]][7:0];             
                      end
                      
-              /*   5'd0 : begin
-                    PSPIC[path_temp_d1[0]][7:0]<=(0>=branching_pointer_old)?(ps_invc_temp[0]):PSPIC[path_temp_d1[0]][7:0];
-                    PSPIC[path_temp_d1[1]][7:0]<=(1>=branching_pointer_old)?(ps_invc_temp[1]):PSPIC[path_temp_d1[1]][7:0];
-                    PSPIC[path_temp_d1[2]][7:0]<=(2>=branching_pointer_old)?(ps_invc_temp[2]):PSPIC[path_temp_d1[2]][7:0];
-                    PSPIC[path_temp_d1[3]][7:0]<=(3>=branching_pointer_old)?(ps_invc_temp[3]):PSPIC[path_temp_d1[3]][7:0];
-                    PSPIC[path_temp_d1[4]][7:0]<=(4>=branching_pointer_old)?(ps_invc_temp[4]):PSPIC[path_temp_d1[4]][7:0];
-                    PSPIC[path_temp_d1[5]][7:0]<=(5>=branching_pointer_old)?(ps_invc_temp[5]):PSPIC[path_temp_d1[5]][7:0];
-                    PSPIC[path_temp_d1[6]][7:0]<=(6>=branching_pointer_old)?(ps_invc_temp[6]):PSPIC[path_temp_d1[6]][7:0];
-                    PSPIC[path_temp_d1[7]][7:0]<=(7>=branching_pointer_old)?(ps_invc_temp[7]):PSPIC[path_temp_d1[7]][7:0];
-                    PSPIC[path_temp_d1[8]][7:0]<=(8>=branching_pointer_old)?(ps_invc_temp[8]):PSPIC[path_temp_d1[8]][7:0];
-                    PSPIC[path_temp_d1[9]][7:0]<=(9>=branching_pointer_old)?(ps_invc_temp[9]):PSPIC[path_temp_d1[9]][7:0];
-                    PSPIC[path_temp_d1[10]][7:0]<=(10>=branching_pointer_old)?(ps_invc_temp[10]):PSPIC[path_temp_d1[10]][7:0];
-                    PSPIC[path_temp_d1[11]][7:0]<=(11>=branching_pointer_old)?(ps_invc_temp[11]):PSPIC[path_temp_d1[11]][7:0];
-                    PSPIC[path_temp_d1[12]][7:0]<=(12>=branching_pointer_old)?(ps_invc_temp[12]):PSPIC[path_temp_d1[12]][7:0];
-                    PSPIC[path_temp_d1[13]][7:0]<=(13>=branching_pointer_old)?(ps_invc_temp[13]):PSPIC[path_temp_d1[13]][7:0];
-                    PSPIC[path_temp_d1[14]][7:0]<=(14>=branching_pointer_old)?(ps_invc_temp[14]):PSPIC[path_temp_d1[14]][7:0];
-                    PSPIC[path_temp_d1[15]][7:0]<=(15>=branching_pointer_old)?(ps_invc_temp[15]):PSPIC[path_temp_d1[15]][7:0];
-                    PSPIC[path_temp_d1[16]][7:0]<=(16>=branching_pointer_old)?(ps_invc_temp[16]):PSPIC[path_temp_d1[16]][7:0];
-                    PSPIC[path_temp_d1[17]][7:0]<=(17>=branching_pointer_old)?(ps_invc_temp[17]):PSPIC[path_temp_d1[17]][7:0];
-                    PSPIC[path_temp_d1[18]][7:0]<=(18>=branching_pointer_old)?(ps_invc_temp[18]):PSPIC[path_temp_d1[18]][7:0];
-                    PSPIC[path_temp_d1[19]][7:0]<=(19>=branching_pointer_old)?(ps_invc_temp[19]):PSPIC[path_temp_d1[19]][7:0];
-                    PSPIC[path_temp_d1[20]][7:0]<=(20>=branching_pointer_old)?(ps_invc_temp[20]):PSPIC[path_temp_d1[20]][7:0];
-                    PSPIC[path_temp_d1[21]][7:0]<=(21>=branching_pointer_old)?(ps_invc_temp[21]):PSPIC[path_temp_d1[21]][7:0];
-                    PSPIC[path_temp_d1[22]][7:0]<=(22>=branching_pointer_old)?(ps_invc_temp[22]):PSPIC[path_temp_d1[22]][7:0];
-                    PSPIC[path_temp_d1[23]][7:0]<=(23==branching_pointer_old)?(ps_invc_temp[23]):PSPIC[path_temp_d1[23]][7:0];             
-                     end*/
+              
                 5'd1 : begin
                     PSPIC[path_temp_d1[0]][15:8]<=(0>=branching_pointer_old)?(PSPIC[path_temp_d1[0]][15:8]+ps_invc_temp[0]):PSPIC[path_temp_d1[0]][15:8];
                     PSPIC[path_temp_d1[1]][15:8]<=(1>=branching_pointer_old)?(PSPIC[path_temp_d1[1]][15:8]+ps_invc_temp[1]):PSPIC[path_temp_d1[1]][15:8];
@@ -1124,7 +1025,7 @@ begin
                     PSPIC[path_temp_d1[17]][111:104]<=(17>=branching_pointer_old)?(PSPIC[path_temp_d1[17]][111:104]+ps_invc_temp[17]):PSPIC[path_temp_d1[17]][111:104];
                     PSPIC[path_temp_d1[18]][111:104]<=(18>=branching_pointer_old)?(PSPIC[path_temp_d1[18]][111:104]+ps_invc_temp[18]):PSPIC[path_temp_d1[18]][111:104];
                     PSPIC[path_temp_d1[19]][111:104]<=(19>=branching_pointer_old)?(PSPIC[path_temp_d1[19]][111:104]+ps_invc_temp[19]):PSPIC[path_temp_d1[19]][111:104];
-  PSPIC[path_temp_d1[20]][111:104]<=(20>=branching_pointer_old)?(PSPIC[path_temp_d1[20]][111:104]+ps_invc_temp[20]):PSPIC[path_temp_d1[20]][111:104];
+  		    PSPIC[path_temp_d1[20]][111:104]<=(20>=branching_pointer_old)?(PSPIC[path_temp_d1[20]][111:104]+ps_invc_temp[20]):PSPIC[path_temp_d1[20]][111:104];
                     PSPIC[path_temp_d1[21]][111:104]<=(21>=branching_pointer_old)?(PSPIC[path_temp_d1[21]][111:104]+ps_invc_temp[21]):PSPIC[path_temp_d1[21]][111:104];
                     PSPIC[path_temp_d1[22]][111:104]<=(22>=branching_pointer_old)?(PSPIC[path_temp_d1[22]][111:104]+ps_invc_temp[22]):PSPIC[path_temp_d1[22]][111:104];
                     PSPIC[path_temp_d1[23]][111:104]<=(23==branching_pointer_old)?(PSPIC[path_temp_d1[23]][111:104]+ps_invc_temp[23]):PSPIC[path_temp_d1[23]][111:104];end
@@ -1174,7 +1075,7 @@ begin
                     PSPIC[path_temp_d1[17]][127:120]<=(17>=branching_pointer_old)?(PSPIC[path_temp_d1[17]][127:120]+ps_invc_temp[17]):PSPIC[path_temp_d1[17]][127:120];
                     PSPIC[path_temp_d1[18]][127:120]<=(18>=branching_pointer_old)?(PSPIC[path_temp_d1[18]][127:120]+ps_invc_temp[18]):PSPIC[path_temp_d1[18]][127:120];
                     PSPIC[path_temp_d1[19]][127:120]<=(19>=branching_pointer_old)?(PSPIC[path_temp_d1[19]][127:120]+ps_invc_temp[19]):PSPIC[path_temp_d1[19]][127:120];
- PSPIC[path_temp_d1[20]][127:120]<=(20>=branching_pointer_old)?(PSPIC[path_temp_d1[20]][127:120]+ps_invc_temp[20]):PSPIC[path_temp_d1[20]][127:120];
+		    PSPIC[path_temp_d1[20]][127:120]<=(20>=branching_pointer_old)?(PSPIC[path_temp_d1[20]][127:120]+ps_invc_temp[20]):PSPIC[path_temp_d1[20]][127:120];
                     PSPIC[path_temp_d1[21]][127:120]<=(21>=branching_pointer_old)?(PSPIC[path_temp_d1[21]][127:120]+ps_invc_temp[21]):PSPIC[path_temp_d1[21]][127:120];
                     PSPIC[path_temp_d1[22]][127:120]<=(22>=branching_pointer_old)?(PSPIC[path_temp_d1[22]][127:120]+ps_invc_temp[22]):PSPIC[path_temp_d1[22]][127:120];
                     PSPIC[path_temp_d1[23]][127:120]<=(23==branching_pointer_old)?(PSPIC[path_temp_d1[23]][127:120]+ps_invc_temp[23]):PSPIC[path_temp_d1[23]][127:120];
@@ -1200,7 +1101,7 @@ begin
                     PSPIC[path_temp_d1[17]][135:128]<=(17>=branching_pointer_old)?(PSPIC[path_temp_d1[17]][135:128]+ps_invc_temp[17]):PSPIC[path_temp_d1[17]][135:128];
                     PSPIC[path_temp_d1[18]][135:128]<=(18>=branching_pointer_old)?(PSPIC[path_temp_d1[18]][135:128]+ps_invc_temp[18]):PSPIC[path_temp_d1[18]][135:128];
                     PSPIC[path_temp_d1[19]][135:128]<=(19>=branching_pointer_old)?(PSPIC[path_temp_d1[19]][135:128]+ps_invc_temp[19]):PSPIC[path_temp_d1[19]][135:128];
-PSPIC[path_temp_d1[20]][135:128]<=(20>=branching_pointer_old)?(PSPIC[path_temp_d1[20]][135:128]+ps_invc_temp[20]):PSPIC[path_temp_d1[20]][135:128];
+		    PSPIC[path_temp_d1[20]][135:128]<=(20>=branching_pointer_old)?(PSPIC[path_temp_d1[20]][135:128]+ps_invc_temp[20]):PSPIC[path_temp_d1[20]][135:128];
                     PSPIC[path_temp_d1[21]][135:128]<=(21>=branching_pointer_old)?(PSPIC[path_temp_d1[21]][135:128]+ps_invc_temp[21]):PSPIC[path_temp_d1[21]][135:128];
                     PSPIC[path_temp_d1[22]][135:128]<=(22>=branching_pointer_old)?(PSPIC[path_temp_d1[22]][135:128]+ps_invc_temp[22]):PSPIC[path_temp_d1[22]][135:128];
                     PSPIC[path_temp_d1[23]][135:128]<=(23==branching_pointer_old)?(PSPIC[path_temp_d1[23]][135:128]+ps_invc_temp[23]):PSPIC[path_temp_d1[23]][135:128];
@@ -1226,7 +1127,7 @@ PSPIC[path_temp_d1[20]][135:128]<=(20>=branching_pointer_old)?(PSPIC[path_temp_d
                     PSPIC[path_temp_d1[17]][143:136]<=(17>=branching_pointer_old)?(PSPIC[path_temp_d1[17]][143:136]+ps_invc_temp[17]):PSPIC[path_temp_d1[17]][143:136];
                     PSPIC[path_temp_d1[18]][143:136]<=(18>=branching_pointer_old)?(PSPIC[path_temp_d1[18]][143:136]+ps_invc_temp[18]):PSPIC[path_temp_d1[18]][143:136];
                     PSPIC[path_temp_d1[19]][143:136]<=(19>=branching_pointer_old)?(PSPIC[path_temp_d1[19]][143:136]+ps_invc_temp[19]):PSPIC[path_temp_d1[19]][143:136];
-PSPIC[path_temp_d1[20]][143:136]<=(20>=branching_pointer_old)?(PSPIC[path_temp_d1[20]][143:136]+ps_invc_temp[20]):PSPIC[path_temp_d1[20]][143:136];
+		    PSPIC[path_temp_d1[20]][143:136]<=(20>=branching_pointer_old)?(PSPIC[path_temp_d1[20]][143:136]+ps_invc_temp[20]):PSPIC[path_temp_d1[20]][143:136];
                     PSPIC[path_temp_d1[21]][143:136]<=(21>=branching_pointer_old)?(PSPIC[path_temp_d1[21]][143:136]+ps_invc_temp[21]):PSPIC[path_temp_d1[21]][143:136];
                     PSPIC[path_temp_d1[22]][143:136]<=(22>=branching_pointer_old)?(PSPIC[path_temp_d1[22]][143:136]+ps_invc_temp[22]):PSPIC[path_temp_d1[22]][143:136];
                     PSPIC[path_temp_d1[23]][143:136]<=(23==branching_pointer_old)?(PSPIC[path_temp_d1[23]][143:136]+ps_invc_temp[23]):PSPIC[path_temp_d1[23]][143:136];
@@ -1605,6 +1506,7 @@ end
 else;
 end
 
+//////// To Path Invocation Count 
 hit_path hit_path_1(
   .clk(clk),
   .reset(reset),
