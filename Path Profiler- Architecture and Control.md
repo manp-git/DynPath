@@ -10,9 +10,18 @@ The path profiler has an instruction decoder and a control logic unit which take
 
 ## Path Detection and Identification Logic: 
 ![image](https://user-images.githubusercontent.com/82860513/192847200-3e92d06d-09ae-446c-9e5d-7ec6b2fd27de.png)
+
 Figure above shows three major blocks present in the Path Detection and Identification Logic (PDIL), their one-way connectivity and flow of information. The Finite State Machine (FSM) shown in Figure below acts as the control unit to synchronize the flow of information between the above 3 modules, viz. the Path Tracking Unit, the Link Circuitry, and the Path Content Addressable Memory (Path CAM) needed for the path detect and identification logic in the proposed path profiler.
 
-Each of the three modules consist of multiple pointers to aid execution of different operations needed for their functionality. These pointers are reset/initialized in state S0 of the FSM. S0 is also the reset state of the FSM. In state S1 the FSM awaits the path detection trigger from the Path Tracking Unit. In states S2 and S3 of the FSM, the path matching process of paths already written into the Path CAM are implemented. As a final step, newly detected paths are written into the Path CAM in states S4 and S5 respectively of the FSM.
+Each of the three modules consist of multiple pointers to aid execution of different operations needed for their functionality. These pointers are reset/initialized in state S0 of the FSM. The diagram is self-explanatory.
+
+S0 - The reset state of the FSM. 
+
+S1 - FSM awaits the path detection trigger from the Path Tracking Unit. 
+
+S2 and S3 - The path matching process of paths already written into the Path CAM are implemented. 
+
+S4 and S5 - As a final step, newly detected paths are written into the Path CAM in states S4 and S5 respectively of the FSM.
 
 ![image](https://user-images.githubusercontent.com/82860513/190897180-eddb8c3b-21d9-4aae-9d0f-51ccfdae5442.png)
 
