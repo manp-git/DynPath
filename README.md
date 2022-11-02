@@ -8,3 +8,6 @@ The initial implementation of the instruction decoder and control unit in simila
 Code logic specific to Path Detection and Identification along with PSPIC is uploaded in this repository. This logic can be interfaced with one's function and loop profiler to generate execution path profiling information in hardware.
 
 C code for a sample exhaustive test case is uploaded, for functional testing of the path profiler. The intention is more on creating exhaustive path structures to validate the path profiler behaviour, than achieving a specific code functionality. Therefore function name/description is not applicable.
+
+This repository also contains the poster presented as a part of RISC-V Workshop, ETH Zurich, titled - "Performance enhancement of RISC-V cores through value prediction based on dynamic data flow analysis".
+
